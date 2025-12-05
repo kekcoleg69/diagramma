@@ -1,3 +1,4 @@
+import "./Diagramma.css";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +17,7 @@ ChartJS.register(
   Tooltip
 );
 
-export function Diagramma({ hoursX, dataY }) {
+export function Diagramma({ hoursX, dataY, selectOption }) {
   const totalCount = [];
   for (let value of dataY) {
     let a = Object.values(value).reduce((acc, el) => acc + el, 0);
@@ -49,8 +50,8 @@ export function Diagramma({ hoursX, dataY }) {
       {
         label: "Dataset 1",
         data: totalCount,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: selectOption === "by_goods" ? "#4F31E4" : "#2196F3",
+        backgroundColor: "rgba(0, 0, 0, 0)",
         detailed: dataY,
       },
     ],
@@ -61,35 +62,40 @@ export function Diagramma({ hoursX, dataY }) {
 function createTooltip(chart) {
   let tooltipElement =
     chart.canvas.parentNode.querySelector(".chartjs-tooltip");
+
   if (!tooltipElement) {
     tooltipElement = `<div class = 'chartjs-tooltip'>
 	<div class = 'tooltip-content'></div>
 	</div>`;
     chart.canvas.parentNode.insertAdjacentHTML("beforeend", tooltipElement);
   }
-  return tooltipElement;
+  return chart.canvas.parentNode.querySelector(".chartjs-tooltip");
 }
 function CustomTooltip(context) {
   const { tooltip, chart } = context;
   const element = createTooltip(chart);
-
   element.style.opacity = 1;
-
-  console.log(typeof tooltip.opacity);
 
   if (tooltip.opacity === 0) {
     element.style.opacity = 0;
     return;
   }
 
+  const coords = chart.canvas.getBoundingClientRect();
+  console.log(coords);
+
+  const tooltipX = tooltip.caretX + coords.left + 10;
+  const tooltipY = tooltip.caretY + coords.top + window.pageYOffset;
+
+  element.style.top = `${tooltipY}px`;
+  element.style.left = `${tooltipX}px`;
+
   const index = tooltip.dataPoints?.[0]?.dataIndex;
   const products = chart.data.datasets?.[0]?.detailed[index];
   let text = ``;
   Object.keys(products).forEach((key) => {
-    text += `<p><span>${key}</span> : <span>${products[key]}</span></p>`;
+    text += `<p class = 'product'><span class = 'product__name'>${key}</span> <span class = 'product__value'>${products[key]}</span></p>`;
   });
 
-  if (typeof element === "object") {
-    element.querySelector(".tooltip-content").innerHTML = text;
-  }
+  element.querySelector(".tooltip-content").innerHTML = text;
 }

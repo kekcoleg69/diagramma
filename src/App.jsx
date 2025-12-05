@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Select from "./components/Select";
-import { Diagramma } from "./components/Diagramma";
+import { Diagramma } from "./components/Diagramma/Diagramma";
 function App() {
   const [selectOption, setSelectOption] = useState("by_goods");
   const [hoursX, setHoursX] = useState([]);
@@ -23,10 +23,12 @@ function App() {
     fetchData();
   }, [selectOption]);
   return (
-    <div style={{ width: "2000px", height: "500px" }}>
-      <Select selectOption={selectOption} setSelectOption={setSelectOption} />
-      <Diagramma hoursX={hoursX} dataY={dataY} />
-    </div>
+    <>
+      <div style={{ width: "1000px", height: "500px" }}>
+        <Select selectOption={selectOption} setSelectOption={setSelectOption} />
+        <Diagramma hoursX={hoursX} dataY={dataY} selectOption={selectOption} />
+      </div>
+    </>
   );
 }
 
